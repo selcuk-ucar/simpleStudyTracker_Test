@@ -1,17 +1,22 @@
+/* ------------------- Container / layout ------------------- */
 #container {
   max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
+  width: 100%;
+  margin: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
+/* Controls section */
 #controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 2rem;
+  gap: 1.5rem;
   justify-content: space-between;
-  margin-bottom: 2rem;
 }
 
+/* Add task form */
 #addTaskForm {
   flex: 1 1 300px;
   display: flex;
@@ -20,16 +25,13 @@
 
 #addTaskForm input {
   flex: 1;
-  padding: 0.5rem 1rem;
-  font-size: 1.2rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
 }
 
+/* Export / import */
 #exportImport {
   flex: 2 1 500px;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
 
@@ -39,27 +41,84 @@
   gap: 0.5rem;
 }
 
+/* ------------------- Categories / columns ------------------- */
 #taskColumns {
   display: flex;
-  gap: 2rem;
-  justify-content: center; /* optional, centers columns */
-  align-items: flex-start;
-  flex-wrap: nowrap; /* prevents stacking */
+  gap: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
 }
 
-#ongoingTasks, #completedTasks {
-  flex: 1;
-  min-width: 300px; /* ensures reasonable width */
-  max-width: 500px;
+.category-column {
+  min-width: 280px;
+  max-width: 320px;
+  background-color: var(--card-bg);
+  padding: 1rem;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* ------------------- Tasks ------------------- */
+.task {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6em 0.8em;
+  border-radius: 8px;
+  background-color: #3a3a50;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.task:hover {
+  background-color: #4a4a6a;
+}
+
+.task.done {
+  opacity: 0.7;
+  text-decoration: line-through;
+}
+
+.task button.delete {
+  background-color: var(--danger);
+  border: none;
+  color: #fff;
+  padding: 0.2em 0.5em;
+  border-radius: 6px;
+}
+
+.task button.delete:hover {
+  background-color: #ff4c4c;
+}
+
+/* Task lists */
+.ongoingTasks, .completedTasks {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  padding: 1rem;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  max-height: 240px;
   overflow-y: auto;
+  padding: 0.5rem;
+  border-radius: 8px;
 }
 
-/* Column colors */
-.ongoingTasks { background-color: #fff8c4; color: #333; }
-.completedTasks { background-color: #c9f7c9; color: #333; }
+.ongoingTasks {
+  background-color: var(--warning);
+  color: #333;
+}
+
+.completedTasks {
+  background-color: var(--success);
+  color: #333;
+}
+
+
+.task span {
+  flex: 1;           /* stretch to fill the space */
+  cursor: pointer;   /* show pointer */
+  display: block;    /* ensures full height is clickable */
+  color: white;
+}

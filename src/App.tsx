@@ -33,6 +33,8 @@ function App() {
   const [newTask, setNewTask] = useState("");
   const [importText, setImportText] = useState<string>("");
   const [category, setCategory] = useState<string>("");
+  const [copied, setCopied] = useState(false);
+
 
   const changeDone = (clickedTaskId: string) => {
 
@@ -56,15 +58,35 @@ function App() {
   const addNewTask = () => {
     if (!newTask.trim()) return; // don’t add empty task
 
-    const newTaskToAdd: Task = { id: Date.now().toString(), title: newTask, done: false, category}
+    const newTaskToAdd: Task = { id: Date.now().toString(), title: newTask, done: false, category: category.toUpperCase() }
     console.log(newTaskToAdd);
     setTasks([...tasks, newTaskToAdd])
     setNewTask("");
-    setCategory("");
-   }
+  }
+
+  const deleteTask = (taskId: string) => {
+    setTasks(tasks => tasks.filter(t => t.id !== taskId));
+  };
 
 
-  const renderTask = (task: Task) => (<p onClick={() => changeDone(task.id)} key={task.id}>{task.category}-{task.title} / {task.done ? "Finished" : "Ongoing"}</p>)
+  const renderTask = (task: Task) => (
+    <div
+      className={`task ${task.done ? "done" : ""}`}
+      onClick={() => changeDone(task.id)}
+    >
+      <span>{task.title}</span>
+
+      <button
+        className="delete"
+        onClick={(e) => {
+          e.stopPropagation(); // prevent toggling done when deleting
+          if (confirm("Delete this task?")) deleteTask(task.id);
+        }}
+      >
+        ✕
+      </button>
+    </div>
+  );
 
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -102,6 +124,26 @@ function App() {
           <div id="exportTasks">
             <h2>Export Tasks</h2>
             <textarea readOnly value={JSON.stringify(tasks, null, 2)} rows={6} />
+            <button style={{
+              backgroundColor: copied ? "green" : undefined,
+              color: copied ? "white" : undefined
+            }}
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(
+                    JSON.stringify(tasks, null, 2)
+                  );
+                  setCopied(true);
+                  setTimeout(() => {
+                    setCopied(false);
+                  }, 2000);
+                } catch {
+                  alert("Clipboard copy failed");
+                }
+              }}
+            >
+              {copied ? "Copied!" : "Copy to clipboard"}
+            </button>
           </div>
 
           <div id="importTasks">
@@ -127,26 +169,26 @@ function App() {
           </div>
         </div>
       </div>
+      <div id='taskColumns'>
+        {Object.entries(tasksByCategory).map(([category, tasks]) => (
+          <div className="category-column" key={category}>
+            <h2>{category}</h2>
 
-      {Object.entries(tasksByCategory).map(([category, tasks]) => (
-        <div className="category-column" key={category}>
-          <h2>{category}</h2>
-          
 
-          <h3>Ongoing</h3>
-          <div className='ongoingTasks'>
-            {tasks.filter(t => !t.done).map(renderTask)}
+            <h3>Ongoing</h3>
+            <div className='ongoingTasks'>
+              {tasks.filter(t => !t.done).map(renderTask)}
+            </div>
+
+
+            <h3>Completed</h3>
+            <div className='completedTasks'>
+              {tasks.filter(t => t.done).map(renderTask)}
+            </div>
+
           </div>
-          
-
-          <h3>Completed</h3>
-          <div className='completedTasks'>
-            {tasks.filter(t => t.done).map(renderTask)}
-          </div>
-
-        </div>
-      ))}
-
+        ))}
+      </div>
     </div>
   )
 }
