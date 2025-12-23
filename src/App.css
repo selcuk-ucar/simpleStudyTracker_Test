@@ -1,0 +1,65 @@
+#container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+#controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+#addTaskForm {
+  flex: 1 1 300px;
+  display: flex;
+  gap: 0.5rem;
+}
+
+#addTaskForm input {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  font-size: 1.2rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+#exportImport {
+  flex: 2 1 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#exportTasks, #importTasks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+#taskColumns {
+  display: flex;
+  gap: 2rem;
+  justify-content: center; /* optional, centers columns */
+  align-items: flex-start;
+  flex-wrap: nowrap; /* prevents stacking */
+}
+
+#ongoingTasks, #completedTasks {
+  flex: 1;
+  min-width: 300px; /* ensures reasonable width */
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  overflow-y: auto;
+}
+
+/* Column colors */
+.ongoingTasks { background-color: #fff8c4; color: #333; }
+.completedTasks { background-color: #c9f7c9; color: #333; }

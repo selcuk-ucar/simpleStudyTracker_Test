@@ -1,0 +1,154 @@
+import { useEffect, useState } from 'react'
+// import reactLogo from './assets/react.svg'
+// import viteLogo from '/vite.svg'
+import './App.css'
+
+interface Task {
+  id: string;
+  title: string;
+  done: boolean;
+  category: string;
+}
+
+
+
+const tasksForTest: Task[] = [{
+  id: "1",
+  title: "Task1",
+  done: false,
+  category: "Math"
+},
+{
+  id: "2",
+  title: "Task2",
+  done: true,
+  category: "Burrito"
+}]
+
+
+
+function App() {
+  const initialTasks = JSON.parse(localStorage.getItem("tasks") || "null") || tasksForTest;
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [newTask, setNewTask] = useState("");
+  const [importText, setImportText] = useState<string>("");
+  const [category, setCategory] = useState<string>("");
+
+  const changeDone = (clickedTaskId: string) => {
+
+    const newTasks = tasks.map(task =>
+      task.id === clickedTaskId ? { ...task, done: !task.done } : task
+    )
+
+    setTasks(newTasks);
+  }
+
+  const handleChangeForNewTask = (e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setNewTask(e.target.value);
+  }
+
+  const handleChangeCategory = (e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setCategory(e.target.value);
+  }
+
+  const addNewTask = () => {
+    if (!newTask.trim()) return; // don’t add empty task
+
+    const newTaskToAdd: Task = { id: Date.now().toString(), title: newTask, done: false, category}
+    console.log(newTaskToAdd);
+    setTasks([...tasks, newTaskToAdd])
+    setNewTask("");
+    setCategory("");
+   }
+
+
+  const renderTask = (task: Task) => (<p onClick={() => changeDone(task.id)} key={task.id}>{task.category}-{task.title} / {task.done ? "Finished" : "Ongoing"}</p>)
+
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks])
+
+
+  const tasksByCategory = tasks.reduce<Record<string, Task[]>>((acc, task) => {
+    acc[task.category] ??= [];
+    acc[task.category].push(task);
+    return acc;
+  }, {})
+
+  return (
+    <div id="container">
+      <h1>Study Tracker</h1>
+
+      <div id="controls">
+        <div id="addTaskForm">
+          <input
+            id="addTask"
+            value={newTask}
+            onChange={handleChangeForNewTask}
+            placeholder="Enter new task name..."
+          />
+          <input
+            id='category'
+            onChange={handleChangeCategory}
+            placeholder="Enter a Category"
+          >
+          </input>
+          <button onClick={addNewTask}>Add Task</button>
+        </div>
+
+        <div id="exportImport">
+          <div id="exportTasks">
+            <h2>Export Tasks</h2>
+            <textarea readOnly value={JSON.stringify(tasks, null, 2)} rows={6} />
+          </div>
+
+          <div id="importTasks">
+            <h2>Import Tasks</h2>
+            <textarea
+              value={importText}
+              onChange={e => setImportText(e.target.value)}
+              rows={6}
+            />
+            <button
+              onClick={() => {
+                try {
+                  const parsed: Task[] = JSON.parse(importText);
+                  setTasks(parsed);
+                  setImportText("");
+                } catch {
+                  alert("Invalid JSON!");
+                }
+              }}
+            >
+              Import
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {Object.entries(tasksByCategory).map(([category, tasks]) => (
+        <div className="category-column" key={category}>
+          <h2>{category}</h2>
+          
+
+          <h3>Ongoing</h3>
+          <div className='ongoingTasks'>
+            {tasks.filter(t => !t.done).map(renderTask)}
+          </div>
+          
+
+          <h3>Completed</h3>
+          <div className='completedTasks'>
+            {tasks.filter(t => t.done).map(renderTask)}
+          </div>
+
+        </div>
+      ))}
+
+    </div>
+  )
+}
+
+export default App
