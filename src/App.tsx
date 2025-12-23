@@ -34,8 +34,52 @@ function App() {
   const [importText, setImportText] = useState<string>("");
   const [category, setCategory] = useState<string>("");
   const [copied, setCopied] = useState(false);
+  const [timeLeft, setTimeLeft] = useState<string>("");
 
+  // calculate countdown until Dec 5, 2025
+  const [expiryTime, setExpiryTime] = useState("15 jul 2022 18:00:00");
+  const [countdownTime, setCountdownTime] = useState({
+    countdownDays: "",
+    countdownHours: "",
+    countdownlMinutes: "",
+    countdownSeconds: "",
+  });
 
+  const countdownTimer = () => {
+    const timeInterval = setInterval(() => {
+      const countdownDateTime = new Date(expiryTime).getTime();
+      const currentTime = new Date().getTime();
+      const remainingDayTime = countdownDateTime - currentTime;
+      const totalDays = Math.floor(remainingDayTime / (1000 * 60 * 60 * 24));
+      const totalHours = Math.floor(
+        (remainingDayTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      );
+      const totalMinutes = Math.floor(
+        (remainingDayTime % (1000 * 60 * 60)) / (1000 * 60)
+      );
+      const totalSeconds = Math.floor(
+        (remainingDayTime % (1000 * 60)) / 1000
+      );
+
+      const runningCountdownTime = {
+        countdownDays: totalDays,
+        countdownHours: totalHours,
+        countdownMinutes: totalMinutes,
+        countdownSeconds: totalSeconds,
+      };
+
+      setCountdownTime(runningCountdownTime);
+
+      if (remainingDayTime < 0) {
+        clearInterval(timeInterval);
+        setExpiryTime(false);
+      }
+    }, 1000);
+  };
+
+  useEffect(() => {
+    countdownTimer();
+  });
   const changeDone = (clickedTaskId: string) => {
 
     const newTasks = tasks.map(task =>
@@ -71,6 +115,7 @@ function App() {
 
   const renderTask = (task: Task) => (
     <div
+      key={task.id}
       className={`task ${task.done ? "done" : ""}`}
       onClick={() => changeDone(task.id)}
     >
@@ -102,6 +147,30 @@ function App() {
   return (
     <div id="container">
       <h1>Study Tracker</h1>
+      <div
+        style={{
+          position: 'relative',
+          width: '100%',
+          paddingBottom: '25%',
+          margin: '0 auto',
+          left: 0
+        }}
+      >
+        <iframe
+          src="https://www.tickcounter.com/widget/countdown/8961062"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            border: 0,
+            overflow: 'hidden'
+          }}
+          title="Days until finals"
+        />
+      </div>
+
 
       <div id="controls">
         <div id="addTaskForm">

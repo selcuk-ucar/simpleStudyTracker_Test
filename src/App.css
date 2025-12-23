@@ -8,6 +8,14 @@
   gap: 2rem;
 }
 
+.countdown {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  color: #ffcc00;
+  text-align: center;
+}
+
 /* Controls section */
 #controls {
   display: flex;
